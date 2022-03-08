@@ -4,16 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# VARS
- "SOUNCLOUD_IMG_URL",
-    "assets/Soundcloud.jpeg",
-)
 
-YOUTUBE_IMG_URL = getenv(
-    "YOUTUBE_IMG_URL",
-    "assets/Youtube.jpeg",
-    if SOUNCLOUD_IMG_URL != "assets/Soundcloud.jpeg":
-        if not re.match("(?:http|https)://", SOUNCLOUD_IMG_URL):
 get_queue = {}
 BOT_TOKEN = getenv("BOT_TOKEN")
 API_ID = int(getenv("API_ID", ""))

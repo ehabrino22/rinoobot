@@ -51,8 +51,7 @@ ASS_CLI_5 = ASS_CLI_5
 LOG_CLIENT = LOG_CLIENT
 aiohttpsession = ClientSession()
 
-from .platforms import *
-SoundCloud = SoundAPI()
+
 
 ### Config
 SUDOERS = SUDO_USERS
