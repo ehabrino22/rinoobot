@@ -9,3 +9,4 @@ def bytes(size: float) -> str:
         size /= power
         t_n += 1
     return "{:.2f} {}B".format(size, power_dict[t_n])
+def seconds_to_min(seconds)
