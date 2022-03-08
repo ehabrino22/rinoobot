@@ -4,17 +4,16 @@ import shutil
 import subprocess
 from sys import version as pyver
 
+from config import OWNER_ID, LOG_SESSION
 from pyrogram import Client, filters
 from pyrogram.errors import FloodWait
 from pyrogram.types import Message
 
-from config import LOG_SESSION, OWNER_ID, SUDO_USERS
-from Yukki import BOT_ID, BOT_USERNAME, MUSIC_BOT_NAME, OWNER_ID, SUDOERS, app
-from Yukki.Database import (add_gban_user, add_off, add_on, add_sudo,
+from Yukki import BOT_ID, MUSIC_BOT_NAME, OWNER_ID, SUDOERS, app, BOT_USERNAME
+from Yukki.Database import (add_gban_user, add_off, add_on, add_sudo, set_video_limit,
                             get_active_chats, get_served_chats, get_sudoers,
                             is_gbanned_user, remove_active_chat,
-                            remove_gban_user, remove_served_chat, remove_sudo,
-                            set_video_limit)
+                            remove_gban_user, remove_served_chat, remove_sudo)
 
 __MODULE__ = "SudoUsers"
 __HELP__ = """
@@ -33,6 +32,9 @@ Only for Sudo Users.
 
 /delsudo [Username or Reply to a user]
 - To Remove A User from Bot's Sudo Users.
+
+/restart 
+- Restart Bot [All downloads, cache, raw files will be cleared too]. 
 
 /maintenance [enable / disable]
 - When enabled Bot goes under maintenance mode. No one can play Music now!
@@ -159,11 +161,7 @@ async def sudoers_list(_, message: Message):
 
 ### Video Limit
 
-
-@app.on_message(
-    filters.command(["set_video_limit", f"set_video_limit@{BOT_USERNAME}"])
-    & filters.user(SUDOERS)
-)
+@app.on_message(filters.command(["set_video_limit", f"set_video_limit@{BOT_USERNAME}"]) & filters.user(SUDOERS))
 async def set_video_limit_kid(_, message: Message):
     if len(message.command) != 2:
         usage = "**Usage:**\n/set_video_limit [Number of chats allowed]"
@@ -173,13 +171,9 @@ async def set_video_limit_kid(_, message: Message):
     try:
         limit = int(state)
     except:
-        return await message.reply_text(
-            "Please Use Numeric Numbers for Setting Limit."
-        )
+        return await message.reply_text("Please Use Numeric Numbers for Setting Limit.")
     await set_video_limit(141414, limit)
-    await message.reply_text(
-        f"Video Calls Maximum Limit Defined to {limit} Chats."
-    )
+    await message.reply_text(f"Video Calls Maximum Limit Defined to {limit} Chats.")
 
 
 ## Maintenance Yukki
@@ -207,13 +201,10 @@ async def maintenance(_, message):
 
 ## Logger
 
-
 @app.on_message(filters.command("logger") & filters.user(SUDOERS))
 async def logger(_, message):
     if LOG_SESSION == "None":
-        return await message.reply_text(
-            "No Logger Account Defined.\n\nPlease Set <code>LOG_SESSION</code> var and then try loggging."
-        )
+        return await message.reply_text("No Logger Account Defined.\n\nPlease Set <code>LOG_SESSION</code> var and then try loggging.")
     usage = "**Usage:**\n/logger [enable|disable]"
     if len(message.command) != 2:
         return await message.reply_text(usage)
@@ -261,12 +252,12 @@ async def ban_globally(_, message):
             for chat in chats:
                 served_chats.append(int(chat["chat_id"]))
             m = await message.reply_text(
-                f"**Initializing Global Ban on {user.mention}**\n\nExpected Time : {len(served_chats)}"
+                f"**Initializing Gobal Ban on {user.mention}**\n\nExpected Time : {len(served_chats)}"
             )
             number_of_chats = 0
             for sex in served_chats:
                 try:
-                    await app.ban_chat_member(sex, user.id)
+                    await app.kick_chat_member(sex, user.id)
                     number_of_chats += 1
                     await asyncio.sleep(1)
                 except FloodWait as e:
@@ -317,7 +308,7 @@ __**New Global Ban on {MUSIC_BOT_NAME}**__
             number_of_chats = 0
             for sex in served_chats:
                 try:
-                    await app.ban_chat_member(sex, user_id)
+                    await app.kick_chat_member(sex, user_id)
                     number_of_chats += 1
                     await asyncio.sleep(1)
                 except FloodWait as e:
@@ -391,6 +382,25 @@ async def unban_globally(_, message):
             await remove_gban_user(user_id)
             await message.reply_text(f"Ungbanned!")
 
+
+chat_watcher_group = 5
+
+
+@app.on_message(group=chat_watcher_group)
+async def chat_watcher_func(_, message):
+    try:
+        userid = message.from_user.id
+    except Exception:
+        return
+    checking = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+    if await is_gbanned_user(userid):
+        try:
+            await message.chat.kick_member(userid)
+        except Exception:
+            return
+        await message.reply_text(
+            f"{checking} is globally banned by Sudo Users and has been kicked out of the chat.\n\n**Possible Reason:** Potential Spammer and Abuser."
+        )
 
 # Broadcast Message
 

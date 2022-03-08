@@ -9,30 +9,33 @@ from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
                             ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from pytgcalls import PyTgCalls, StreamType
 from pytgcalls.types import Update
-from pytgcalls.types.input_stream import (AudioVideoPiped, InputAudioStream,
-                                          InputStream)
-from pytgcalls.types.input_stream.quality import (HighQualityAudio,
-                                                  HighQualityVideo,
-                                                  LowQualityVideo,
-                                                  MediumQualityVideo)
+from pytgcalls.types.input_stream import InputAudioStream, InputStream
+from pytgcalls.types.input_stream import AudioVideoPiped
+from pytgcalls.types.input_stream.quality import (
+    HighQualityAudio,
+    HighQualityVideo,
+    LowQualityVideo,
+    MediumQualityVideo,
+)
+
 from pytgcalls.types.stream import StreamAudioEnded, StreamVideoEnded
 
-from config import STRING1, STRING2, STRING3, STRING4, STRING5, get_queue
+from config import get_queue, STRING5, STRING1, STRING2, STRING3, STRING4
 from Yukki import (ASS_CLI_1, ASS_CLI_2, ASS_CLI_3, ASS_CLI_4, ASS_CLI_5,
                    MUSIC_BOT_NAME, app, db_mem)
 from Yukki.Core.PyTgCalls import Queues
 from Yukki.Core.PyTgCalls.Converter import convert
 from Yukki.Core.PyTgCalls.Downloader import download
-from Yukki.Database import (get_assistant, remove_active_chat,
-                            remove_active_video_chat)
+from Yukki.Database import get_assistant, remove_active_chat, remove_active_video_chat
 from Yukki.Inline import (audio_markup, audio_timer_markup_start,
-                          primary_markup, secondary_markup2, timer_markup)
+                          primary_markup, timer_markup)
 from Yukki.Utilities.changers import time_to_seconds
 from Yukki.Utilities.chat import specialfont_to_normal
 from Yukki.Utilities.theme import check_theme
 from Yukki.Utilities.thumbnails import gen_thumb
 from Yukki.Utilities.timer import start_timer
-from Yukki.Utilities.youtube import get_m3u8, get_yt_info_id
+from Yukki.Utilities.youtube import get_yt_info_id, get_m3u8
+
 
 ### Clients
 pytgcalls1 = PyTgCalls(ASS_CLI_1)
@@ -42,7 +45,6 @@ pytgcalls4 = PyTgCalls(ASS_CLI_4)
 pytgcalls5 = PyTgCalls(ASS_CLI_5)
 
 ### Multi Assistant start
-
 
 async def join_stream(chat_id: int, file_path: str):
     _assistant = await get_assistant(chat_id, "assistant")
@@ -119,16 +121,14 @@ async def join_stream(chat_id: int, file_path: str):
             return False
     return False
 
-
 ### Join Live Stream
-
 
 async def join_live_stream(chat_id: int, link: str, quality):
     if int(quality) == 720:
         stream_quality = HighQualityVideo()
-    elif int(quality) == 480:
+    elif int(quality)  == 480:
         stream_quality = MediumQualityVideo()
-    elif int(quality) == 360:
+    elif int(quality)  == 360:
         stream_quality = LowQualityVideo()
     _assistant = await get_assistant(chat_id, "assistant")
     assistant = _assistant["saveassistant"]
@@ -203,17 +203,17 @@ async def join_live_stream(chat_id: int, link: str, quality):
         except:
             return False
     return False
+
 
 
 ### Join Video Stream
 
-
 async def join_video_stream(chat_id: int, link: str, quality):
     if int(quality) == 720:
         stream_quality = HighQualityVideo()
-    elif int(quality) == 480:
+    elif int(quality)  == 480:
         stream_quality = MediumQualityVideo()
-    elif int(quality) == 360:
+    elif int(quality)  == 360:
         stream_quality = LowQualityVideo()
     _assistant = await get_assistant(chat_id, "assistant")
     assistant = _assistant["saveassistant"]
@@ -290,6 +290,11 @@ async def join_video_stream(chat_id: int, link: str, quality):
         except:
             return False
     return False
+
+
+
+
+
 
 
 ### Multi Assistant Pause
@@ -407,65 +412,76 @@ async def skip_stream(chat_id: int, file_path: str):
 ### Multi Assistant Video Skip
 
 
+
 async def skip_video_stream(chat_id: int, ytlink: str, quality, mystic):
     if int(quality) == 720:
         stream_quality = HighQualityVideo()
-    elif int(quality) == 480:
+    elif int(quality)  == 480:
         stream_quality = MediumQualityVideo()
-    elif int(quality) == 360:
+    elif int(quality)  == 360:
         stream_quality = LowQualityVideo()
     _assistant = await get_assistant(chat_id, "assistant")
     assistant = _assistant["saveassistant"]
     if int(assistant) == 1:
         try:
             await pytgcalls1.change_stream(
-                chat_id,
-                AudioVideoPiped(ytlink, HighQualityAudio(), stream_quality),
+                chat_id, 
+                AudioVideoPiped(
+                    ytlink, 
+                    HighQualityAudio(), 
+                    stream_quality
+                )
             )
         except:
-            return await mystic.edit(
-                "Failed to Change Video Stream.. Please Skip Again."
-            )
+            return await mystic.edit("Failed to Change Video Stream.. Please Skip Again.")
     elif int(assistant) == 2:
         try:
             await pytgcalls2.change_stream(
-                chat_id,
-                AudioVideoPiped(ytlink, HighQualityAudio(), stream_quality),
+                chat_id, 
+                AudioVideoPiped(
+                    ytlink, 
+                    HighQualityAudio(), 
+                    stream_quality
+                )
             )
         except:
-            return await mystic.edit(
-                "Failed to Change Video Stream.. Please Skip Again."
-            )
+            return await mystic.edit("Failed to Change Video Stream.. Please Skip Again.")
     elif int(assistant) == 3:
         try:
             await pytgcalls3.change_stream(
-                chat_id,
-                AudioVideoPiped(ytlink, HighQualityAudio(), stream_quality),
+                chat_id, 
+                AudioVideoPiped(
+                    ytlink, 
+                    HighQualityAudio(), 
+                    stream_quality
+                )
             )
         except:
-            return await mystic.edit(
-                "Failed to Change Video Stream.. Please Skip Again."
-            )
+            return await mystic.edit("Failed to Change Video Stream.. Please Skip Again.")
     elif int(assistant) == 4:
         try:
             await pytgcalls4.change_stream(
-                chat_id,
-                AudioVideoPiped(ytlink, HighQualityAudio(), stream_quality),
+                chat_id, 
+                AudioVideoPiped(
+                    ytlink, 
+                    HighQualityAudio(), 
+                    stream_quality
+                )
             )
         except:
-            return await mystic.edit(
-                "Failed to Change Video Stream.. Please Skip Again."
-            )
+            return await mystic.edit("Failed to Change Video Stream.. Please Skip Again.")
     elif int(assistant) == 5:
         try:
             await pytgcalls5.change_stream(
-                chat_id,
-                AudioVideoPiped(ytlink, HighQualityAudio(), stream_quality),
+                chat_id, 
+                AudioVideoPiped(
+                    ytlink, 
+                    HighQualityAudio(), 
+                    stream_quality
+                )
             )
         except:
-            return await mystic.edit(
-                "Failed to Change Video Stream.. Please Skip Again."
-            )
+            return await mystic.edit("Failed to Change Video Stream.. Please Skip Again.")
 
 
 ### Multi Assistant Playout End
@@ -521,7 +537,7 @@ async def playout_end(pytgclients, chat_id):
                     chat_id,
                     photo=thumb,
                     reply_markup=InlineKeyboardMarkup(buttons),
-                    caption=f"🎥<b>__Started Streaming:__</b> {title} \n👤<b>__Requested by:__ </b> {mention}",
+                    caption=f"🎥<b>__Started Playing:__</b> {title} \n👤<b>__Requested by:__ </b> {mention}",
                 )
                 await start_timer(
                     videoid,
@@ -531,30 +547,25 @@ async def playout_end(pytgclients, chat_id):
                     chat_id,
                     "28492",
                     aud,
-                )
+                )   
             elif str(finxx) == "s1s":
                 read = (str(afk)).replace("s1s_", "", 1)
-                s = read.split("_+_")
+                s = read.split('_+_')
                 quality = s[0]
                 videoid = s[1]
                 if int(quality) == 1080:
                     stream_quality = HighQualityVideo()
                     try:
                         await pytgclients.change_stream(
-                            chat_id,
-                            AudioVideoPiped(
-                                videoid, HighQualityAudio(), stream_quality
-                            ),
+                            chat_id, AudioVideoPiped(videoid, HighQualityAudio(), stream_quality)
                         )
                     except:
-                        return await app.send_message(
-                            chat_id,
-                            "Some Error occured while switching video stream. Playout is on hold now. Please skip the stream to resume the voice chat.",
-                        )
+                        return await app.send_message(chat_id, "Some Error occured while switching video stream. Playout is on hold now. Please skip the stream to resume the voice chat.")
                     c_title = db_mem[afk]["chat_title"]
                     chat_title = await specialfont_to_normal(c_title)
-                    buttons = secondary_markup2("Smex1", "283028")
+                    buttons = secondary_markup2("Smex1", message.from_user.id)
                     mention = db_mem[afk]["username"]
+                    await mystic.delete()
                     finaltext = await app.send_photo(
                         chat_id,
                         photo="Utils/Telegram.JPEG",
@@ -562,46 +573,35 @@ async def playout_end(pytgclients, chat_id):
                         caption=(
                             f"**Video Streaming**\n\n🎥<b>__Started Playing:__ </b>Next Video from Telegram \n👤**__Requested by:__** {mention}"
                         ),
-                    )
-                else:
+                    )         
+                else:  
                     (
                         title,
                         duration_min,
                         duration_sec,
                         thumbnail,
-                        views,
-                        channel
                     ) = get_yt_info_id(videoid)
                     if int(quality) == 720:
                         stream_quality = HighQualityVideo()
-                    elif int(quality) == 480:
+                    elif int(quality)  == 480:
                         stream_quality = MediumQualityVideo()
-                    elif int(quality) == 360:
+                    elif int(quality)  == 360:
                         stream_quality = LowQualityVideo()
                     nrs, ytlink = await get_m3u8(videoid)
                     if nrs == 0:
-                        return await app.send_message(
-                            chat_id,
-                            "Failed to fetch Video Formats for next stream. Please skip the stream to resume the voice chat.",
-                        )
+                        return await app.send_message(chat_id, "Failed to fetch Video Formats for next stream. Please skip the stream to resume the voice chat.")
                     try:
                         await pytgclients.change_stream(
-                            chat_id,
-                            AudioVideoPiped(
-                                ytlink, HighQualityAudio(), stream_quality
-                            ),
+                            chat_id, AudioVideoPiped(ytlink, HighQualityAudio(), stream_quality)
                         )
                     except:
-                        return await app.send_message(
-                            chat_id,
-                            "Some Error occured while switching video stream. Playout is on hold now. Please skip the stream to resume the voice chat.",
-                        )
+                        return await app.send_message(chat_id, "Some Error occured while switching video stream. Playout is on hold now. Please skip the stream to resume the voice chat.")
                     theme = await check_theme(chat_id)
                     c_title = db_mem[afk]["chat_title"]
                     user_id = db_mem[afk]["user_id"]
                     chat_title = await specialfont_to_normal(c_title)
                     thumb = await gen_thumb(
-                        thumbnail, title, user_id, "NOW PLAYING", views, duration_min, channel
+                        thumbnail, title, user_id, theme, chat_title
                     )
                     buttons = primary_markup(
                         videoid, user_id, duration_min, duration_min
@@ -623,7 +623,7 @@ async def playout_end(pytgclients, chat_id):
                         finaltext,
                         chat_id,
                         "28492",
-                        aud,
+                        aud
                     )
             else:
                 mystic = await app.send_message(
@@ -635,8 +635,6 @@ async def playout_end(pytgclients, chat_id):
                     duration_min,
                     duration_sec,
                     thumbnail,
-                    views,
-                    channel
                 ) = get_yt_info_id(afk)
                 mystic = await mystic.edit(
                     f"**{MUSIC_BOT_NAME} Downloader**\n\n**Title:** {title[:50]}\n\n0% ▓▓▓▓▓▓▓▓▓▓▓▓ 100%"
@@ -659,8 +657,8 @@ async def playout_end(pytgclients, chat_id):
                 user_id = db_mem[afk]["user_id"]
                 chat_title = await specialfont_to_normal(c_title)
                 thumb = await gen_thumb(
-                        thumbnail, title, user_id, "NOW PLAYING", views, duration_min, channel
-                    )
+                    thumbnail, title, user_id, theme, chat_title
+                )
                 buttons = primary_markup(
                     afk, user_id, duration_min, duration_min
                 )
@@ -683,9 +681,9 @@ async def playout_end(pytgclients, chat_id):
                     finaltext,
                     chat_id,
                     "28492",
-                    aud,
+                    aud
                 )
-
+   
     except Exception as e:
         print(e)
 

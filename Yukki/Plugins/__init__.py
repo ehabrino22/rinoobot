@@ -1,6 +1,5 @@
 import glob
 from os.path import basename, dirname, isfile
-from .Soundcloud import SoundAP
 
 
 def __list_all_modules():

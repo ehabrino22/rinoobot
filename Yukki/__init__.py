@@ -1,26 +1,23 @@
 import asyncio
 import os
 import time
+import heroku3
 from os import listdir, mkdir
 
-import heroku3
-from aiohttp import ClientSession
 from git import Repo
-from git.exc import GitCommandError, InvalidGitRepositoryError
+from aiohttp import ClientSession
 from motor.motor_asyncio import AsyncIOMotorClient as Bot
 from rich.console import Console
 from rich.table import Table
 
-from config import (ASSISTANT_PREFIX, DURATION_LIMIT_MIN, LOG_GROUP_ID,
-                    LOG_SESSION)
+from config import ASSISTANT_PREFIX, DURATION_LIMIT_MIN, LOG_GROUP_ID, UPSTREAM_REPO, UPSTREAM_BRANCH
 from config import MONGO_DB_URI as mango
-from config import (MUSIC_BOT_NAME, OWNER_ID, STRING1, STRING2, STRING3,
-                    STRING4, STRING5, SUDO_USERS, UPSTREAM_BRANCH,
-                    UPSTREAM_REPO, get_queue, botusername)
-from Yukki.Core.Clients.cli import (ASS_CLI_1, ASS_CLI_2, ASS_CLI_3, ASS_CLI_4,
-                                    ASS_CLI_5, LOG_CLIENT, app)
+from config import MUSIC_BOT_NAME, OWNER_ID, SUDO_USERS, get_queue
+from config import STRING1, STRING2, STRING3, STRING4, STRING5, LOG_SESSION
+from Yukki.Core.Clients.cli import (ASS_CLI_1, ASS_CLI_2, ASS_CLI_3,
+                                    ASS_CLI_4, ASS_CLI_5, LOG_CLIENT, app)
 from Yukki.Utilities.changers import time_to_seconds
-from Yukki.Utilities.tasks import install_requirements
+from git.exc import GitCommandError, InvalidGitRepositoryError
 
 loop = asyncio.get_event_loop()
 console = Console()
@@ -51,8 +48,6 @@ ASS_CLI_5 = ASS_CLI_5
 LOG_CLIENT = LOG_CLIENT
 aiohttpsession = ClientSession()
 
-
-
 ### Config
 SUDOERS = SUDO_USERS
 OWNER_ID = OWNER_ID
@@ -64,7 +59,7 @@ ASSISTANT_PREFIX = ASSISTANT_PREFIX
 ### Bot Info
 BOT_ID = 0
 BOT_NAME = ""
-BOT_USERNAME = botusername
+BOT_USERNAME = ""
 
 ### Assistant Info
 ASSIDS = []
@@ -90,10 +85,9 @@ ASSUSERNAME5 = ""
 ASSMENTION5 = ""
 random_assistant = []
 
-
-async def initiate_bot():    
+async def initiate_bot():
     global SUDOERS, OWNER_ID, ASSIDS
-    global BOT_ID, BOT_NAME
+    global BOT_ID, BOT_NAME, BOT_USERNAME
     global ASSID1, ASSNAME1, ASSMENTION1, ASSUSERNAME1
     global ASSID2, ASSNAME2, ASSMENTION2, ASSUSERNAME2
     global ASSID3, ASSNAME3, ASSMENTION3, ASSUSERNAME3
@@ -107,7 +101,7 @@ async def initiate_bot():
     )
     console.print(header)
     with console.status(
-        "[magenta] SiestaXMusic Bot Booting...",
+        "[magenta] Yukki Music Bot Booting...",
     ) as status:
         console.print("┌ [red]Booting Up The Clients...\n")
         await app.start()
@@ -153,7 +147,7 @@ async def initiate_bot():
             BOT_NAME = getme.first_name + " " + getme.last_name
         else:
             BOT_NAME = getme.first_name
-        
+        BOT_USERNAME = getme.username
         if STRING1 != "None":
             getme1 = await ASS_CLI_1.get_me()
             ASSID1 = getme1.id
@@ -223,7 +217,7 @@ async def initiate_bot():
                     upsert=True,
                 )
         SUDOERS = (SUDOERS + sudoers + OWNER_ID) if sudoers else SUDOERS
-        console.print("└ [green]Loaded Sudo Users Successfully!\n")
+        console.print("└ [green]Loaded Sudo Users Successfully!\n")   
         try:
             repo = Repo()
         except GitCommandError:
@@ -236,13 +230,11 @@ async def initiate_bot():
             if "origin" in repo.remotes:
                 origin = repo.remote("origin")
             else:
-                origin = repo.create_remote("origin", UPSTREAM_REPO)
+                   origin = repo.create_remote("origin", UPSTREAM_REPO)
             origin.fetch()
-            repo.create_head(UPSTREAM_BRANCH, origin.refs[UPSTREAM_BRANCH])
-            repo.heads[UPSTREAM_BRANCH].set_tracking_branch(
-                origin.refs[UPSTREAM_BRANCH]
-            )
-            repo.heads[UPSTREAM_BRANCH].checkout(True)
+            repo.create_head(UPSTREAM_BRANCH, origin.refs.master)
+            repo.heads.master.set_tracking_branch(origin.refs.master)
+            repo.heads.master.checkout(True)
             try:
                 repo.create_remote("origin", UPSTREAM_REPO)
             except BaseException:
@@ -253,18 +245,21 @@ async def initiate_bot():
                 nrs.pull(UPSTREAM_BRANCH)
             except GitCommandError:
                 repo.git.reset("--hard", "FETCH_HEAD")
-            await install_requirements(
-                "pip3 install --no-cache-dir -r requirements.txt"
-            )
+            os.system('pip3 install -r requirements.txt') ;
             console.print("└ [red]Git Client Update Completed\n")
+                
+                
+                
+            
+
+
+
 
 
 loop.run_until_complete(initiate_bot())
 
-
 def init_db():
     global db_mem
     db_mem = {}
-
 
 init_db()

@@ -9,11 +9,11 @@ from pyrogram.types import (InlineKeyboardMarkup, InputMediaPhoto, Message,
                             Voice)
 
 from config import get_queue
-from Yukki import BOT_USERNAME, SUDOERS, app, db_mem, random_assistant
-from Yukki.Database import (get_active_chats, get_active_video_chats,
-                            get_assistant, is_active_chat, save_assistant)
+from Yukki import SUDOERS, app, db_mem, random_assistant
+from Yukki.Database import (get_active_chats, get_assistant, is_active_chat,
+                            save_assistant)
 from Yukki.Decorators.checker import checker, checkerCB
-from Yukki.Inline import primary_markup,choose_markup
+from Yukki.Inline import primary_markup
 from Yukki.Utilities.assistant import get_assistant_details
 
 loop = asyncio.get_event_loop()
@@ -36,21 +36,6 @@ Only for Sudo Users
 /leavebot [Chat Username or Chat ID]
 - Bot will leave the particular chat.
 """
-
-@app.on_callback_query(filters.regex("gback_list_chose_stream"))
-async def gback_list_chose_stream(_, CallbackQuery):
-    await CallbackQuery.answer()
-    callback_data = CallbackQuery.data.strip()
-    callback_request = callback_data.split(None, 1)[1]
-    videoid, duration, user_id = callback_request.split("|")
-    if CallbackQuery.from_user.id != int(user_id):
-        return await CallbackQuery.answer(
-            "This is not for you! Search You Own Song.", show_alert=True
-        )
-    buttons = choose_markup(videoid, duration, user_id)
-    await CallbackQuery.edit_message_reply_markup(
-        reply_markup=InlineKeyboardMarkup(buttons)
-    )
 
 
 @app.on_callback_query(filters.regex("pr_go_back_timer"))
@@ -89,7 +74,7 @@ async def timer_checkup_markup(_, CallbackQuery):
         )
 
 
-@app.on_message(filters.command(["queue", f"queue@{BOT_USERNAME}"]))
+@app.on_message(filters.command("queue"))
 async def activevc(_, message: Message):
     global get_queue
     if await is_active_chat(message.chat.id):
@@ -169,39 +154,6 @@ async def activevc(_, message: Message):
     else:
         await message.reply_text(
             f"**Active Voice Chats:-**\n\n{text}",
-            disable_web_page_preview=True,
-        )
-
-
-@app.on_message(filters.command("activevideo") & filters.user(SUDOERS))
-async def activevi_(_, message: Message):
-    served_chats = []
-    try:
-        chats = await get_active_video_chats()
-        for chat in chats:
-            served_chats.append(int(chat["chat_id"]))
-    except Exception as e:
-        await message.reply_text(f"**Error:-** {e}")
-    text = ""
-    j = 0
-    for x in served_chats:
-        try:
-            title = (await app.get_chat(x)).title
-        except Exception:
-            title = "Private Group"
-        if (await app.get_chat(x)).username:
-            user = (await app.get_chat(x)).username
-            text += (
-                f"<b>{j + 1}.</b>  [{title}](https://t.me/{user})[`{x}`]\n"
-            )
-        else:
-            text += f"<b>{j + 1}. {title}</b> [`{x}`]\n"
-        j += 1
-    if not text:
-        await message.reply_text("No Active Voice Chats")
-    else:
-        await message.reply_text(
-            f"**Active Video Calls:-**\n\n{text}",
             disable_web_page_preview=True,
         )
 

@@ -1,12 +1,12 @@
-import os
 import re
+import os
 
 import lyricsgenius
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from youtubesearchpython import VideosSearch
 
-from Yukki import BOT_USERNAME, MUSIC_BOT_NAME, app
+from Yukki import MUSIC_BOT_NAME, app
 
 __MODULE__ = "Lyrics"
 __HELP__ = """
@@ -78,7 +78,7 @@ async def lyricssex(_, CallbackQuery):
         await CallbackQuery.message.reply_text(xxx)
 
 
-@app.on_message(filters.command(["lyrics", f"lyrics@{BOT_USERNAME}"]))
+@app.on_message(filters.command("lyrics"))
 async def lrsearch(_, message: Message):
     if len(message.command) < 2:
         return await message.reply_text("**Usage:**\n\n/lyrics [ Music Name]")
@@ -113,3 +113,4 @@ async def lrsearch(_, message: Message):
         os.remove(filename)
     else:
         await m.edit(xxx)
+    

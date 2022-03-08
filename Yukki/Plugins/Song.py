@@ -11,7 +11,8 @@ from Yukki import (BOT_USERNAME, DURATION_LIMIT, DURATION_LIMIT_MIN,
 from Yukki.Decorators.permission import PermissionCheck
 from Yukki.Inline import song_download_markup, song_markup
 from Yukki.Utilities.url import get_url
-from Yukki.Utilities.youtube import get_yt_info_query, get_yt_info_query_slider
+from Yukki.Utilities.youtube import (get_yt_info_query,
+                                     get_yt_info_query_slider)
 
 loop = asyncio.get_event_loop()
 
@@ -28,21 +29,15 @@ __HELP__ = """
 
 
 @app.on_message(
-    filters.command(["song", f"song@{BOT_USERNAME}"])
+    filters.command(["song", f"song@{BOT_USERNAME}"]) & filters.group
 )
 @PermissionCheck
 async def play(_, message: Message):
-    if message.chat.type == "private":
-        pass
-    else:
-        if message.sender_chat:
-            return await message.reply_text(
-                "You're an __Anonymous Admin__ in this Chat Group!\nRevert back to User Account From Admin Rights."
-            )
-    try:
-        await message.delete()
-    except:
-        pass
+    if message.sender_chat:
+        return await message.reply_text(
+            "You're an __Anonymous Admin__ in this Chat Group!\nRevert back to User Account From Admin Rights."
+        )
+    await message.delete()
     url = get_url(message)
     if url:
         mystic = await message.reply_text("🔄 Processing URL... Please Wait!")

@@ -3,22 +3,20 @@ import os
 import random
 from asyncio import QueueEmpty
 
+from config import get_queue
 from pyrogram import filters
 from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
                             InlineKeyboardMarkup, KeyboardButton, Message,
                             ReplyKeyboardMarkup, ReplyKeyboardRemove)
 
-from config import get_queue
 from Yukki import BOT_USERNAME, MUSIC_BOT_NAME, app, db_mem
 from Yukki.Core.PyTgCalls import Queues
 from Yukki.Core.PyTgCalls.Converter import convert
 from Yukki.Core.PyTgCalls.Downloader import download
-from Yukki.Core.PyTgCalls.Yukki import (pause_stream, resume_stream,
-                                        skip_stream, skip_video_stream,
-                                        stop_stream)
-from Yukki.Database import (is_active_chat, is_music_playing, music_off,
-                            music_on, remove_active_chat,
-                            remove_active_video_chat)
+from Yukki.Core.PyTgCalls.Yukki import (pause_stream, resume_stream, skip_video_stream,
+                                        skip_stream, stop_stream)
+from Yukki.Database import (is_active_chat, is_music_playing, music_off, remove_active_video_chat,
+                            music_on, remove_active_chat)
 from Yukki.Decorators.admins import AdminRightsCheck
 from Yukki.Decorators.checker import checker, checkerCB
 from Yukki.Inline import audio_markup, primary_markup, secondary_markup2
@@ -27,7 +25,10 @@ from Yukki.Utilities.chat import specialfont_to_normal
 from Yukki.Utilities.theme import check_theme
 from Yukki.Utilities.thumbnails import gen_thumb
 from Yukki.Utilities.timer import start_timer
-from Yukki.Utilities.youtube import get_m3u8, get_yt_info_id
+from Yukki.Utilities.youtube import get_yt_info_id
+
+
+from Yukki.Utilities.youtube import get_m3u8
 
 loop = asyncio.get_event_loop()
 
@@ -58,13 +59,11 @@ Only for Sudo Users
 /activevc
 - Check active voice chats on bot.
 
-/activevideo
-- Check active video calls on bot.
 """
 
 
 @app.on_message(
-    filters.command(["pause", "skip", "resume", "stop", "end",  f"pause@{BOT_USERNAME}",  f"skip@{BOT_USERNAME}",  f"resume@{BOT_USERNAME}",  f"stop@{BOT_USERNAME}",  f"end@{BOT_USERNAME}"])
+    filters.command(["pause", "skip", "resume", "stop", "end"])
     & filters.group
 )
 @AdminRightsCheck
@@ -82,7 +81,7 @@ async def admins(_, message: Message):
         await music_off(chat_id)
         await pause_stream(chat_id)
         await message.reply_text(
-            f"⏸ **Track paused.**\n\n• **To resume the stream, use the**\n» /resume command."
+            f"🎧 Voicechat Paused by {message.from_user.mention}!"
         )
     if message.command[0][1] == "e":
         if await is_music_playing(message.chat.id):
@@ -90,7 +89,7 @@ async def admins(_, message: Message):
         await music_on(chat_id)
         await resume_stream(chat_id)
         await message.reply_text(
-            f"▶️ **Track resumed.**\n\n• **To pause the stream, use the**\n» /pause command."
+            f"🎧 Voicechat Resumed by {message.from_user.mention}!"
         )
     if message.command[0][1] == "t" or message.command[0][1] == "n":
         if message.chat.id not in db_mem:
@@ -172,23 +171,19 @@ async def admins(_, message: Message):
                     message.chat.id,
                     message.from_user.id,
                     aud,
-                )
-            elif str(finxx) == "s1s":
-                mystic = await message.reply_text(
-                    "Skipped.. Changing to next Video Stream."
-                )
+                ) 
+            elif str(finxx) == "s1s": 
+                mystic = await message.reply_text("Skipped.. Changing to next Video Stream.")
                 afk = videoid
                 read = (str(videoid)).replace("s1s_", "", 1)
-                s = read.split("_+_")
+                s = read.split('_+_')
                 quality = s[0]
                 videoid = s[1]
                 if int(quality) == 1080:
                     try:
                         await skip_video_stream(chat_id, videoid, 720, mystic)
                     except Exception as e:
-                        return await mystic.edit(
-                            f"Error while changing video stream.\n\nPossible Reason:- {e}"
-                        )
+                        return await mystic.edit(f"Error while changing video stream.\n\nPossible Reason:- {e}")
                     buttons = secondary_markup2("Smex1", message.from_user.id)
                     mention = db_mem[afk]["username"]
                     await mystic.delete()
@@ -199,38 +194,30 @@ async def admins(_, message: Message):
                             f"<b>__Skipped Video Chat__</b>\n\n👤**__Requested by:__** {mention}"
                         ),
                     )
-                    await mystic.delete()
-                else:
+                    await mystic.delete()           
+                else:  
                     (
                         title,
                         duration_min,
                         duration_sec,
                         thumbnail,
-                        views,
-                        channel
                     ) = get_yt_info_id(videoid)
                     nrs, ytlink = await get_m3u8(videoid)
                     if nrs == 0:
-                        return await mystic.edit(
-                            "Failed to fetch Video Formats.",
-                        )
+                        return await mystic.edit("Failed to fetch Video Formats.",)
                     try:
-                        await skip_video_stream(
-                            chat_id, ytlink, quality, mystic
-                        )
+                        await skip_video_stream(chat_id, ytlink, quality, mystic)
                     except Exception as e:
-                        return await mystic.edit(
-                            f"Error while changing video stream.\n\nPossible Reason:- {e}"
-                        )
+                        return await mystic.edit(f"Error while changing video stream.\n\nPossible Reason:- {e}")
                     theme = await check_theme(chat_id)
                     c_title = message.chat.title
                     user_id = db_mem[afk]["user_id"]
                     chat_title = await specialfont_to_normal(c_title)
                     thumb = await gen_thumb(
-                        thumbnail, title, user_id, "NOW PLAYING", views, duration_min, channel
+                        thumbnail, title, user_id, theme, chat_title
                     )
                     buttons = primary_markup(
-                        videoid, user_id, duration_min, duration_min
+                    videoid, user_id, duration_min, duration_min
                     )
                     mention = db_mem[afk]["username"]
                     await mystic.delete()
@@ -251,19 +238,17 @@ async def admins(_, message: Message):
                         message.chat.id,
                         message.from_user.id,
                         aud,
-                    )
+                    ) 
             else:
                 mystic = await message.reply_text(
                     f"**{MUSIC_BOT_NAME} Playlist Function**\n\n__Downloading Next Music From Playlist....__"
                 )
                 (
-                        title,
-                        duration_min,
-                        duration_sec,
-                        thumbnail,
-                        views,
-                        channel
-                    ) = get_yt_info_id(videoid)
+                    title,
+                    duration_min,
+                    duration_sec,
+                    thumbnail,
+                ) = get_yt_info_id(videoid)
                 await mystic.edit(
                     f"**{MUSIC_BOT_NAME} Downloader**\n\n**Title:** {title[:50]}\n\n0% ▓▓▓▓▓▓▓▓▓▓▓▓ 100%"
                 )
@@ -275,8 +260,8 @@ async def admins(_, message: Message):
                 theme = await check_theme(chat_id)
                 chat_title = await specialfont_to_normal(message.chat.title)
                 thumb = await gen_thumb(
-                        thumbnail, title, message.from_user.id, "NOW PLAYING", views, duration_min, channel
-                    )
+                    thumbnail, title, message.from_user.id, theme, chat_title
+                )
                 buttons = primary_markup(
                     videoid, message.from_user.id, duration_min, duration_min
                 )
@@ -298,4 +283,7 @@ async def admins(_, message: Message):
                     message.chat.id,
                     message.from_user.id,
                     aud,
-                )
+                ) 
+
+
+                

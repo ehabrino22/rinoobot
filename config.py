@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# VARS
 
 get_queue = {}
 BOT_TOKEN = getenv("BOT_TOKEN")
@@ -19,15 +20,18 @@ MUSIC_BOT_NAME = getenv("MUSIC_BOT_NAME")
 HEROKU_API_KEY = getenv("HEROKU_API_KEY")
 HEROKU_APP_NAME = getenv("HEROKU_APP_NAME")
 
-UPSTREAM_REPO = "https://github.com/TechShreyash/SiestaXMusic"
-UPSTREAM_BRANCH = "main"
+UPSTREAM_REPO = getenv("UPSTREAM_REPO", "https://github.com/NotReallyShikhar/YukkiMusicBot")
+UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "master")
 
-SUPPORT_CHANNEL = "https://t.me/TechZBots"
-SUPPORT_GROUP = "https://t.me/TechZBots_Support"
+if str(getenv("SUPPORT_CHANNEL")).strip() == "":
+    SUPPORT_CHANNEL = None
+else:
+    SUPPORT_CHANNEL = str(getenv("SUPPORT_CHANNEL"))
+if str(getenv("SUPPORT_GROUP")).strip() == "":
+    SUPPORT_GROUP = None
+else:
+    SUPPORT_GROUP = str(getenv("SUPPORT_GROUP"))
 
-THUMBNAIL = getenv("THUMB_LINK") 
-
-botusername = str(getenv("BOT_USERNAME"))
 
 if str(getenv("STRING_SESSION1")).strip() == "":
     STRING1 = str(None)
@@ -58,13 +62,3 @@ if str(getenv("LOG_SESSION")).strip() == "":
     LOG_SESSION = str(None)
 else:
     LOG_SESSION = str(getenv("LOG_SESSION"))
-
-if str(getenv("LIMIT")).strip().upper() == "FALSE":
-    PL_LIMIT = "FALSE"
-else:
-    PL_LIMIT = "TRUE"
-
-if str(getenv("PM_PERMIT")).strip().upper() == "FALSE":
-    PM_PERMIT = "FALSE"
-else:
-    PM_PERMIT = "TRUE"

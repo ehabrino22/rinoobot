@@ -1,9 +1,10 @@
-from Yukki.Plugins.custom.start import start_menu_private
 import asyncio
 import importlib
 import os
 import re
+from Yukki.Core.Clients.cli import LOG_CLIENT
 
+from config import LOG_GROUP_ID
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pytgcalls import idle
@@ -11,18 +12,15 @@ from rich.console import Console
 from rich.table import Table
 from youtubesearchpython import VideosSearch
 
-from config import (LOG_GROUP_ID, LOG_SESSION, STRING1, STRING2, STRING3,
-                    STRING4, STRING5, THUMBNAIL)
-from Yukki import (ASS_CLI_1, ASS_CLI_2, ASS_CLI_3, ASS_CLI_4, ASS_CLI_5,
-                   ASSID1, ASSID2, ASSID3, ASSID4, ASSID5, ASSNAME1, ASSNAME2,
-                   ASSNAME3, ASSNAME4, ASSNAME5, BOT_ID, BOT_NAME, BOT_USERNAME, LOG_CLIENT,
-                   OWNER_ID, app)
-from Yukki.Core.Clients.cli import LOG_CLIENT
+from config import LOG_GROUP_ID, STRING5, STRING4, STRING3, STRING2, STRING1, LOG_SESSION
+from Yukki import (ASS_CLI_1, ASS_CLI_2, ASS_CLI_3, ASS_CLI_4, ASS_CLI_5, LOG_CLIENT,
+                   ASSID1, ASSID2, ASSID3, ASSID4, ASSID5, ASSNAME1, ASSNAME2, OWNER_ID,
+                   ASSNAME3, ASSNAME4, ASSNAME5, BOT_ID, BOT_NAME, app)
+
+
 from Yukki.Core.PyTgCalls.Yukki import (pytgcalls1, pytgcalls2, pytgcalls3,
                                         pytgcalls4, pytgcalls5)
-from Yukki.Database import (get_active_chats, get_active_video_chats,
-                            get_sudoers, is_on_off, remove_active_chat,
-                            remove_active_video_chat)
+from Yukki.Database import get_active_chats, get_sudoers, remove_active_chat, get_active_video_chats, remove_active_video_chat, is_on_off
 from Yukki.Inline import private_panel
 from Yukki.Plugins import ALL_MODULES
 from Yukki.Utilities.inline import paginate_modules
@@ -79,19 +77,14 @@ async def initiate_bot():
                 f">> [bold cyan]Successfully imported: [green]{all_module}.py"
             )
         console.print("")
-        status.update(
-            status="[bold blue]Importation Completed!",
-        )
+        status.update(status="[bold blue]Importation Completed!",)
     console.print(
-        "[bold green]Congrats!! SiestaXMusic Bot has started successfully!\n"
+        "[bold green]Congrats!! Yukki Music Bot has started successfully!\n"
     )
     try:
-        await app.send_message(
-            LOG_GROUP_ID,
-            "<b>Congrats!! Music Bot has started successfully!</b>",
-        )
+        await app.send_message(LOG_GROUP_ID,"<b>Congrats!! Music Bot has started successfully!</b>",)
     except Exception as e:
-        print(str(e))
+        print("\nBot has failed to access the log Channel. Make sure that you have added your bot to your log channel and promoted as admin!")
         console.print(f"\n[red]Stopping Bot")
         return
     a = await app.get_chat_member(LOG_GROUP_ID, BOT_ID)
@@ -103,19 +96,14 @@ async def initiate_bot():
     console.print(f"├[green] ID :- {BOT_ID}!")
     if STRING1 != "None":
         try:
-            await ASS_CLI_1.send_message(
-                LOG_GROUP_ID,
-                "<b>Congrats!! Assistant Client 1  has started successfully!</b>",
-            )
+            await ASS_CLI_1.send_message(LOG_GROUP_ID,"<b>Congrats!! Assistant Client 1  has started successfully!</b>",)
         except Exception as e:
-            print(
-                "\nAssistant Account 1 has failed to access the log Channel. Make sure that you have added your Assistant to your log channel and promoted as admin!"
-            )
+            print("\nAssistant Account 1 has failed to access the log Channel. Make sure that you have added your Assistant to your log channel and promoted as admin!")
             console.print(f"\n[red]Stopping Bot")
             return
-        try:
-            await ASS_CLI_1.join_chat("TechZBots")
-            await ASS_CLI_1.join_chat("TechZBots_Support")
+        try:  
+            await ASS_CLI_1.join_chat("OfficialYukki")
+            await ASS_CLI_1.join_chat("YukkiSupport")
         except:
             pass
         console.print(f"├[red] Assistant 1 Started as {ASSNAME1}!")
@@ -133,13 +121,13 @@ async def initiate_bot():
             console.print(f"\n[red]Stopping Bot")
             return
         try:
-            await ASS_CLI_2.join_chat("TechZBots")
-            await ASS_CLI_2.join_chat("TechZBots_Support")
+            await ASS_CLI_2.join_chat("OfficialYukki")
+            await ASS_CLI_2.join_chat("YukkiSupport")
         except:
             pass
         console.print(f"├[red] Assistant 2 Started as {ASSNAME2}!")
         console.print(f"├[green] ID :- {ASSID2}!")
-    if STRING3 != "None":
+    if STRING3 != "None":    
         try:
             await ASS_CLI_3.send_message(
                 LOG_GROUP_ID,
@@ -152,8 +140,8 @@ async def initiate_bot():
             console.print(f"\n[red]Stopping Bot")
             return
         try:
-            await ASS_CLI_3.join_chat("TechZBots")
-            await ASS_CLI_3.join_chat("TechZBots_Support")
+            await ASS_CLI_3.join_chat("OfficialYukki")
+            await ASS_CLI_3.join_chat("YukkiSupport")
         except:
             pass
         console.print(f"├[red] Assistant 3 Started as {ASSNAME3}!")
@@ -171,13 +159,13 @@ async def initiate_bot():
             console.print(f"\n[red]Stopping Bot")
             return
         try:
-            await ASS_CLI_4.join_chat("TechZBots")
-            await ASS_CLI_4.join_chat("TechZBots_Support")
+            await ASS_CLI_4.join_chat("OfficialYukki")
+            await ASS_CLI_4.join_chat("YukkiSupport")
         except:
             pass
         console.print(f"├[red] Assistant 4 Started as {ASSNAME4}!")
         console.print(f"├[green] ID :- {ASSID4}!")
-    if STRING5 != "None":
+    if STRING5 != "None":    
         try:
             await ASS_CLI_5.send_message(
                 LOG_GROUP_ID,
@@ -190,8 +178,8 @@ async def initiate_bot():
             console.print(f"\n[red]Stopping Bot")
             return
         try:
-            await ASS_CLI_5.join_chat("TechZBots")
-            await ASS_CLI_5.join_chat("TechZBots_Support")
+            await ASS_CLI_5.join_chat("OfficialYukki")
+            await ASS_CLI_5.join_chat("YukkiSupport")
         except:
             pass
         console.print(f"├[red] Assistant 5 Started as {ASSNAME5}!")
@@ -209,8 +197,8 @@ async def initiate_bot():
             console.print(f"\n[red]Stopping Bot")
             return
         try:
-            await LOG_CLIENT.join_chat("TechZBots")
-            await LOG_CLIENT.join_chat("TechZBots_Support")
+            await LOG_CLIENT.join_chat("OfficialYukki")
+            await LOG_CLIENT.join_chat("YukkiSupport")
         except:
             pass
     console.print(f"└[red] Yukki Music Bot Boot Completed.")
@@ -228,19 +216,20 @@ async def initiate_bot():
     console.print(f"\n[red]Stopping Bot")
 
 
-home_text_pm = f"""Hello firstname,
-My name is {BOT_NAME}.
-A Telegram Music+Video Streaming bot with some useful features.
+home_text_pm = f"""مرحبا ,
+بك انا بوت تشغيل الاغاني في المكالمات الصوتيه {BOT_NAME}.
+اضفني الي مجموعتك.
 
-All commands can be used with: / """
+اذا واجهتك مشكله في تشغيل البوت كلم المطور [RINO](https://t.me/libcubehawk): / """
 
 
-@app.on_message(filters.command(["help", f"help@{BOT_USERNAME}"]) & filters.private)
+@app.on_message(filters.command("help") & filters.private)
 async def help_command(_, message):
-    await start_menu_private(message)
+    text, keyboard = await help_parser(message.from_user.mention)
+    await app.send_message(message.chat.id, text, reply_markup=keyboard)
 
 
-@app.on_message(filters.command(["start", f"start@{BOT_USERNAME}"]) & filters.private)
+@app.on_message(filters.command("start") & filters.private)
 async def start_command(_, message):
     if len(message.text.split()) > 1:
         name = (message.text.split(None, 1)[1]).lower()
@@ -251,9 +240,7 @@ async def start_command(_, message):
             for x in OWNER_ID:
                 try:
                     user = await app.get_users(x)
-                    user = (
-                        user.first_name if not user.mention else user.mention
-                    )
+                    user = user.first_name if not user.mention else user.mention
                     sex += 1
                 except Exception:
                     continue
@@ -263,11 +250,7 @@ async def start_command(_, message):
                 if user_id not in OWNER_ID:
                     try:
                         user = await app.get_users(user_id)
-                        user = (
-                            user.first_name
-                            if not user.mention
-                            else user.mention
-                        )
+                        user = user.first_name if not user.mention else user.mention
                         if smex == 0:
                             smex += 1
                             text += "\n⭐️<u> **Sudo Users:**</u>\n"
@@ -283,12 +266,15 @@ async def start_command(_, message):
                 sender_id = message.from_user.id
                 sender_name = message.from_user.first_name
                 umention = f"[{sender_name}](tg://user?id={int(sender_id)})"
-                return await LOG_CLIENT.send_message(
-                    LOG_GROUP_ID,
-                    f"{message.from_user.mention} has just started bot to check <code>SUDOLIST</code>\n\n**USER ID:** {sender_id}\n**USER NAME:** {sender_name}",
-                )
+                return await LOG_CLIENT.send_message(LOG_GROUP_ID, f"{message.from_user.mention} has just started bot to check <code>SUDOLIST</code>\n\n**USER ID:** {sender_id}\n**USER NAME:** {sender_name}")
         if name == "help":
-            return await start_menu_private(message)
+            text, keyboard = await help_parser(message.from_user.mention)
+            await message.delete()
+            return await app.send_text(
+                message.chat.id,
+                text,
+                reply_markup=keyboard,
+            )
         if name[0] == "i":
             m = await message.reply_text("🔎 Fetching Info!")
             query = (str(name)).replace("info_", "", 1)
@@ -340,14 +326,21 @@ async def start_command(_, message):
                 sender_id = message.from_user.id
                 sender_name = message.from_user.first_name
                 umention = f"[{sender_name}](tg://user?id={int(sender_id)})"
-                return await LOG_CLIENT.send_message(
-                    LOG_GROUP_ID,
-                    f"{message.from_user.mention} has just started bot to check <code>VIDEO INFORMATION</code>\n\n**USER ID:** {sender_id}\n**USER NAME:** {sender_name}",
-                )
+                return await LOG_CLIENT.send_message(LOG_GROUP_ID, f"{message.from_user.mention} has just started bot to check <code>VIDEO INFORMATION</code>\n\n**USER ID:** {sender_id}\n**USER NAME:** {sender_name}")
             return
-    else:
-        return await start_menu_private(message)
+    out = private_panel()
+    await message.reply_text(
+        home_text_pm,
+        reply_markup=InlineKeyboardMarkup(out[1]),
+    )
+    if await is_on_off(5):
+        sender_id = message.from_user.id
+        sender_name = message.from_user.first_name
+        umention = f"[{sender_name}](tg://user?id={int(sender_id)})"
+        return await LOG_CLIENT.send_message(LOG_GROUP_ID, f"{message.from_user.mention} has just started Bot.\n\n**USER ID:** {sender_id}\n**USER NAME:** {sender_name}")
+    return
 
+    
 
 async def help_parser(name, keyboard=None):
     if not keyboard:
@@ -413,11 +406,9 @@ All commands can be used with: /
         )
     elif home_match:
         out = private_panel()
-        text1 = home_text_pm.replace("firstname",query.from_user.mention)
-        await app.send_photo(
+        await app.send_message(
             query.from_user.id,
-            photo=THUMBNAIL,
-            caption=text1,
+            text=home_text_pm,
             reply_markup=InlineKeyboardMarkup(out[1]),
         )
         await query.message.delete()
