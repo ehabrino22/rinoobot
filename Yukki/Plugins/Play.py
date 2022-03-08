@@ -1,3 +1,10 @@
+from Yukki.Utilities.yt_playlist import play_yt_playlist
+import requests
+from Yukki.Utilities.spotify import get_spotify_url, getsp_album_info, getsp_artist_info, getsp_playlist_info, getsp_track_info
+from Yukki.Plugins.custom.func import mplay_stream
+from Yukki.Utilities.resso import get_resso_album, get_resso_artist, get_resso_playlist, get_resso_track, get_resso_url
+from Yukki.Plugins.Resso import resso_buttons, resso_play
+from Yukki.Plugins.Spotify import spotify_buttons, spotify_play,SoundCloud
 import asyncio
 from os import path
 
@@ -29,6 +36,7 @@ from Yukki.Utilities.url import get_url
 from Yukki.Utilities.videostream import start_stream_video
 from Yukki.Utilities.youtube import (get_yt_info_id, get_yt_info_query,
                                      get_yt_info_query_slider)
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 loop = asyncio.get_event_loop()
 
@@ -142,6 +150,15 @@ async def play(_, message: Message):
             mystic,
         )
     elif url:
+        if "spotify.com" in url:
+            return await message.reply_text("Use /spotify for spotify links")
+        
+        if "resso.com" in url:            
+            return await message.reply_text("Use /resso for resso links")
+        
+        if "youtube.com/playlist" in url:            
+            return await play_yt_playlist(message)
+            
         mystic = await message.reply_text("🔄 Processing URL... Please Wait!")
         if not message.reply_to_message:
             query = message.text.split(None, 1)[1]
@@ -153,6 +170,8 @@ async def play(_, message: Message):
             duration_sec,
             thumb,
             videoid,
+            views, 
+            channel
         ) = get_yt_info_query(query)
         await mystic.delete()
         buttons = url_markup2(videoid, duration_min, message.from_user.id)
@@ -182,6 +201,8 @@ async def play(_, message: Message):
             duration_sec,
             thumb,
             videoid,
+            views, 
+            channel
         ) = get_yt_info_query(query)
         await mystic.delete()
         buttons = url_markup(
@@ -225,7 +246,14 @@ async def Music_Stream(_, CallbackQuery):
             "This is not for you! Search You Own Song.", show_alert=True
         )
     await CallbackQuery.message.delete()
-    title, duration_min, duration_sec, thumbnail = get_yt_info_id(videoid)
+    (
+        title,
+        duration_min,
+        duration_sec,
+        thumbnail,
+        views,
+        channel
+    ) = get_yt_info_id(videoid)
     if duration_sec > DURATION_LIMIT:
         return await CallbackQuery.message.reply_text(
             f"**Duration Limit Exceeded**\n\n**Allowed Duration: **{DURATION_LIMIT_MIN} minute(s)\n**Received Duration:** {duration_min} minute(s)"
@@ -240,7 +268,9 @@ async def Music_Stream(_, CallbackQuery):
     raw_path = await convert(downloaded_file)
     theme = await check_theme(chat_id)
     chat_title = await specialfont_to_normal(chat_title)
-    thumb = await gen_thumb(thumbnail, title, user_id, theme, chat_title)
+    thumb = await gen_thumb(
+                        thumbnail, title, CallbackQuery.from_user.id, "NOW PLAYING", views, duration_min, channel
+                    )
     if chat_id not in db_mem:
         db_mem[chat_id] = {}
     await start_stream(
@@ -254,7 +284,42 @@ async def Music_Stream(_, CallbackQuery):
         mystic,
     )
 
-
+ elif await SoundCloud.valid(url):
+            try:
+                details, track_path = await SoundCloud.download(url)
+            except Exception:
+                return await mystic.edit_text(_["play_3"])
+            duration_sec = details["duration_sec"]
+            if duration_sec > config.DURATION_LIMIT:
+                return await mystic.edit_text(
+                    _["play_6"].format(
+                        config.DURATION_LIMIT_MIN,
+                        details["duration_min"],
+                    )
+                )
+            try:
+                await stream(
+                    _,
+                    mystic,
+                    user_id,
+                    details,
+                    chat_id,
+                    user_name,
+                    message.chat.id,
+                    streamtype="soundcloud",
+                )
+            except Exception as e:
+                ex_type = type(e).__name__
+                err = (
+                    e
+                    if ex_type == "AssistantErr"
+                    else _["general_3"].format(ex_type)
+                )
+                return await mystic.edit_text(err)
+            return await mystic.delete()
+        else:
+            return await mystic.edit_text(_["play_14"])
+    else:
 @app.on_callback_query(filters.regex(pattern=r"Search"))
 async def search_query_more(_, CallbackQuery):
     callback_data = CallbackQuery.data.strip()

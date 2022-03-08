@@ -1,3 +1,4 @@
+from Yukki.Plugins.custom.start import start_menu_private
 import asyncio
 import importlib
 import os
@@ -11,10 +12,10 @@ from rich.table import Table
 from youtubesearchpython import VideosSearch
 
 from config import (LOG_GROUP_ID, LOG_SESSION, STRING1, STRING2, STRING3,
-                    STRING4, STRING5)
+                    STRING4, STRING5, THUMBNAIL)
 from Yukki import (ASS_CLI_1, ASS_CLI_2, ASS_CLI_3, ASS_CLI_4, ASS_CLI_5,
                    ASSID1, ASSID2, ASSID3, ASSID4, ASSID5, ASSNAME1, ASSNAME2,
-                   ASSNAME3, ASSNAME4, ASSNAME5, BOT_ID, BOT_NAME, LOG_CLIENT,
+                   ASSNAME3, ASSNAME4, ASSNAME5, BOT_ID, BOT_NAME, BOT_USERNAME, LOG_CLIENT,
                    OWNER_ID, app)
 from Yukki.Core.Clients.cli import LOG_CLIENT
 from Yukki.Core.PyTgCalls.Yukki import (pytgcalls1, pytgcalls2, pytgcalls3,
@@ -82,7 +83,7 @@ async def initiate_bot():
             status="[bold blue]Importation Completed!",
         )
     console.print(
-        "[bold green]Congrats!! Yukki Music Bot has started successfully!\n"
+        "[bold green]Congrats!! SiestaXMusic Bot has started successfully!\n"
     )
     try:
         await app.send_message(
@@ -90,9 +91,7 @@ async def initiate_bot():
             "<b>Congrats!! Music Bot has started successfully!</b>",
         )
     except Exception as e:
-        print(
-            "\nBot has failed to access the log Channel. Make sure that you have added your bot to your log channel and promoted as admin!"
-        )
+        print(str(e))
         console.print(f"\n[red]Stopping Bot")
         return
     a = await app.get_chat_member(LOG_GROUP_ID, BOT_ID)
@@ -115,8 +114,8 @@ async def initiate_bot():
             console.print(f"\n[red]Stopping Bot")
             return
         try:
-            await ASS_CLI_1.join_chat("OfficialYukki")
-            await ASS_CLI_1.join_chat("YukkiSupport")
+            await ASS_CLI_1.join_chat("TechZBots")
+            await ASS_CLI_1.join_chat("TechZBots_Support")
         except:
             pass
         console.print(f"├[red] Assistant 1 Started as {ASSNAME1}!")
@@ -134,8 +133,8 @@ async def initiate_bot():
             console.print(f"\n[red]Stopping Bot")
             return
         try:
-            await ASS_CLI_2.join_chat("OfficialYukki")
-            await ASS_CLI_2.join_chat("YukkiSupport")
+            await ASS_CLI_2.join_chat("TechZBots")
+            await ASS_CLI_2.join_chat("TechZBots_Support")
         except:
             pass
         console.print(f"├[red] Assistant 2 Started as {ASSNAME2}!")
@@ -153,8 +152,8 @@ async def initiate_bot():
             console.print(f"\n[red]Stopping Bot")
             return
         try:
-            await ASS_CLI_3.join_chat("OfficialYukki")
-            await ASS_CLI_3.join_chat("YukkiSupport")
+            await ASS_CLI_3.join_chat("TechZBots")
+            await ASS_CLI_3.join_chat("TechZBots_Support")
         except:
             pass
         console.print(f"├[red] Assistant 3 Started as {ASSNAME3}!")
@@ -172,8 +171,8 @@ async def initiate_bot():
             console.print(f"\n[red]Stopping Bot")
             return
         try:
-            await ASS_CLI_4.join_chat("OfficialYukki")
-            await ASS_CLI_4.join_chat("YukkiSupport")
+            await ASS_CLI_4.join_chat("TechZBots")
+            await ASS_CLI_4.join_chat("TechZBots_Support")
         except:
             pass
         console.print(f"├[red] Assistant 4 Started as {ASSNAME4}!")
@@ -191,8 +190,8 @@ async def initiate_bot():
             console.print(f"\n[red]Stopping Bot")
             return
         try:
-            await ASS_CLI_5.join_chat("OfficialYukki")
-            await ASS_CLI_5.join_chat("YukkiSupport")
+            await ASS_CLI_5.join_chat("TechZBots")
+            await ASS_CLI_5.join_chat("TechZBots_Support")
         except:
             pass
         console.print(f"├[red] Assistant 5 Started as {ASSNAME5}!")
@@ -210,8 +209,8 @@ async def initiate_bot():
             console.print(f"\n[red]Stopping Bot")
             return
         try:
-            await LOG_CLIENT.join_chat("OfficialYukki")
-            await LOG_CLIENT.join_chat("YukkiSupport")
+            await LOG_CLIENT.join_chat("TechZBots")
+            await LOG_CLIENT.join_chat("TechZBots_Support")
         except:
             pass
     console.print(f"└[red] Yukki Music Bot Boot Completed.")
@@ -229,25 +228,19 @@ async def initiate_bot():
     console.print(f"\n[red]Stopping Bot")
 
 
-home_text_pm = f"""Hello
-{BOT_NAME} can to stream any media on groups through the Telegram video call feature! example :
-┏━━━━━━━━━━━━━━
-┣• Play music.
-┣• Play video.
-┣• download song.
-┣• download video.
-┣• Search Youtube Link with inline.
-┗━━━━━━━━━━━━━━
-💡Find all of my command by clicking on the » Help « button!"""
+home_text_pm = f"""Hello firstname,
+My name is {BOT_NAME}.
+A Telegram Music+Video Streaming bot with some useful features.
+
+All commands can be used with: / """
 
 
-@app.on_message(filters.command("help") & filters.private)
+@app.on_message(filters.command(["help", f"help@{BOT_USERNAME}"]) & filters.private)
 async def help_command(_, message):
-    text, keyboard = await help_parser(message.from_user.mention)
-    await app.send_message(message.chat.id, text, reply_markup=keyboard)
+    await start_menu_private(message)
 
 
-@app.on_message(filters.command("start") & filters.private)
+@app.on_message(filters.command(["start", f"start@{BOT_USERNAME}"]) & filters.private)
 async def start_command(_, message):
     if len(message.text.split()) > 1:
         name = (message.text.split(None, 1)[1]).lower()
@@ -295,13 +288,7 @@ async def start_command(_, message):
                     f"{message.from_user.mention} has just started bot to check <code>SUDOLIST</code>\n\n**USER ID:** {sender_id}\n**USER NAME:** {sender_name}",
                 )
         if name == "help":
-            text, keyboard = await help_parser(message.from_user.mention)
-            await message.delete()
-            return await app.send_text(
-                message.chat.id,
-                text,
-                reply_markup=keyboard,
-            )
+            return await start_menu_private(message)
         if name[0] == "i":
             m = await message.reply_text("🔎 Fetching Info!")
             query = (str(name)).replace("info_", "", 1)
@@ -358,20 +345,8 @@ async def start_command(_, message):
                     f"{message.from_user.mention} has just started bot to check <code>VIDEO INFORMATION</code>\n\n**USER ID:** {sender_id}\n**USER NAME:** {sender_name}",
                 )
             return
-    out = private_panel()
-    await message.reply_text(
-        home_text_pm,
-        reply_markup=InlineKeyboardMarkup(out[1]),
-    )
-    if await is_on_off(5):
-        sender_id = message.from_user.id
-        sender_name = message.from_user.first_name
-        umention = f"[{sender_name}](tg://user?id={int(sender_id)})"
-        return await LOG_CLIENT.send_message(
-            LOG_GROUP_ID,
-            f"{message.from_user.mention} has just started Bot.\n\n**USER ID:** {sender_id}\n**USER NAME:** {sender_name}",
-        )
-    return
+    else:
+        return await start_menu_private(message)
 
 
 async def help_parser(name, keyboard=None):
@@ -380,7 +355,9 @@ async def help_parser(name, keyboard=None):
     return (
         """Hello {first_name},
 
-Below are all bot commands, please press one to find out what commands are in it.
+Click on the buttons for more information.
+
+All commands can be used with: /
 """.format(
             first_name=name
         ),
@@ -404,7 +381,9 @@ async def help_button(client, query):
     create_match = re.match(r"help_create", query.data)
     top_text = f"""Hello {query.from_user.first_name},
 
-Below are all bot commands, please press one to find out what commands are in it.
+Click on the buttons for more information.
+
+All commands can be used with: /
  """
     if mod_match:
         module = mod_match.group(1)
@@ -434,9 +413,11 @@ Below are all bot commands, please press one to find out what commands are in it
         )
     elif home_match:
         out = private_panel()
-        await app.send_message(
+        text1 = home_text_pm.replace("firstname",query.from_user.mention)
+        await app.send_photo(
             query.from_user.id,
-            text=home_text_pm,
+            photo=THUMBNAIL,
+            caption=text1,
             reply_markup=InlineKeyboardMarkup(out[1]),
         )
         await query.message.delete()

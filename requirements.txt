@@ -17,6 +17,11 @@ psutil
 requests
 rich
 dnspython
+yt-dlp==2021.11.10.1
 tgcrypto
 gitpython
 heroku3
+spotipy
+bs4
+html5lib
+numpy

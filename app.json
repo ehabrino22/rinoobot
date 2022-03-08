@@ -1,13 +1,12 @@
 {
-  "name": "Yukki Music Bot",
+  "name": "SiestaXMusic",
   "description": "A Telegram Music Bot with proper functions written in Python with Pyrogram and Py-Tgcalls.",
-  "logo": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg",
+  "logo": "https://telegra.ph/file/70eacddcef7a56310cf70.jpg",
   "keywords": [
   "python3",
   "telegram",
   "bot",
-  "Yukki",
-  "YukkiMusicBot",
+  "SiestaXMusic",
   "telegram-bot",
   "pyrogram"
   ],
@@ -43,33 +42,13 @@
       "value": "",
       "required": true
     },
-    "BOT_IMG": {
-      "description": "Photo for your bot",
-      "value": "https://telegra.ph/file/d3f62131358c475dda9ae.jpg",
-      "required": true
-    },
     "MUSIC_BOT_NAME": {
       "description": "A name for your Music Bot.",
       "value": "",
       "required": true
-    },
-    "SUPPORT_CHANNEL": {
-      "description": "Support Channel Link if you have any, Leave blank if no support. Your link must start with https://t.me/",
-      "value": "",
-      "required": false
-    },
-    "SUPPORT_GROUP": {
-      "description": "Support Group Link if you have any, Leave blank if no support. Your link must start with https://t.me/",
-      "value": "",
-      "required": false
-    },
+    },    
     "OWNER_ID": {
       "description": "The user id(s) of user(s) whom you would like to add as a OWNER. Multiple values shall be seperated with a space.",
-      "value": "",
-      "required": true
-    },
-    "OWNER_USERMAME": {
-      "description": "Your username whitout @.",
       "value": "",
       "required": true
     },
@@ -78,10 +57,25 @@
       "value": "",
       "required": true
     },
-    "OWNER_NAME": {
-      "description": "Your name",
+    "STRING_SESSION2": {
+      "description": "A Pyrogram String Session. Leave blank if you dont want Multi-Assistant",
       "value": "",
-      "required": true
+      "required": false
+    },
+    "STRING_SESSION3": {
+      "description": "A Pyrogram String Session. Leave blank if you dont want Multi-Assistant",
+      "value": "",
+      "required": false
+    },
+    "STRING_SESSION4": {
+      "description": "A Pyrogram String Session. Leave blank if you dont want Multi-Assistant",
+      "value": "",
+      "required": false
+    },
+    "STRING_SESSION5": {
+      "description": "A Pyrogram String Session. Leave blank if you dont want Multi-Assistant",
+      "value": "",
+      "required": false
     },
     "HEROKU_API_KEY": {
       "description": "Your Heroku account's API key",
@@ -103,15 +97,25 @@
       "value": "",
       "required": true
     },
-    "UPSTREAM_REPO": {
-      "description": "If you dont know this, Leave as it is",
-      "value": "https://github.com/NotReallyShikhar/YukkiMusicBot",
+    "THUMB_LINK": {
+      "description": "Telegraph image link of a image which you want to set as thumbnail.",
+      "value": "https://telegra.ph/file/e17f42bc195635b668d6d.jpg",
       "required": true
     },
-    "UPSTREAM_BRANCH": {
-      "description": "Repo's Branch Name",
-      "value": "master",
+    "BOT_USERNAME": {
+      "description": "Your bot's username.",
+      "value": "",
       "required": true
+    },
+    "LIMIT": {
+      "description": "Use True to enable 20 songs limit for playlist songs from spotify. FALSE to disable.",
+      "value": "TRUE",
+      "required": false
+    },
+    "PM_PERMIT": {
+      "description": "Use True to enable PM Permit. FALSE to disable.",
+      "value": "TRUE",
+      "required": false
     }
   },
   "buildpacks": [
